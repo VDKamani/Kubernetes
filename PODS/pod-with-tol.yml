@@ -17,3 +17,5 @@ spec:
       # effect: "NoSchedule"
       # effect: "NoExecute"
       # effect: "PreferNoSchedule"
+  schedulerName: my-custom-scheduler
+  
