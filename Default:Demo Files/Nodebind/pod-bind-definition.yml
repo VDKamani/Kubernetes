@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Binding
+metadata:
+  name: myapp-binding
+  namespace: myapp-namespace
+target:
+  apiVersion: v1
+  kind: Pod
+  name: myapp-pod
+

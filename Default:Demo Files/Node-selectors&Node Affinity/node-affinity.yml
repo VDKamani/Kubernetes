@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                  - ssd
+                  - hdd
+
+# The affinity field is used to specify the affinity/anti-affinity rules for the pod.
+# The affinity field is a map of affinity/anti-affinity rules.
+# The affinity field has two subfields: nodeAffinity and podAffinity.
+# The nodeAffinity field is used to specify the affinity/anti-affinity rules for the node.  
+# The nodeAffinity field has two subfields: requiredDuringSchedulingIgnoredDuringExecution and preferredDuringSchedulingIgnoredDuringExecution. 
+# The requiredDuringSchedulingIgnoredDuringExecution field is used to specify the rules that must be met for the pod to be scheduled on a node. 
+# The preferredDuringSchedulingIgnoredDuringExecution field is used to specify the rules that should be met for the pod to be scheduled on a node.
+# The requiredDuringSchedulingIgnoredDuringExecution field has a subfield called nodeSelectorTerms.
+# The nodeSelectorTerms field is a list of nodeSelectorTerm objects.
+# The nodeSelectorTerm object has a subfield called matchExpressions.
+# The matchExpressions field is a list of nodeSelectorRequirement objects.
+# The nodeSelectorRequirement object has three fields: key, operator, and values.
+# The key field is used to specify the key of the node label.
+# The operator field is used to specify the operator to be used for matching the node label.
+# The values field is used to specify the values of the node label.
+# In this example, the pod is scheduled on a node only if the node has the key-value pair disktype: ssd or disktype: hdd.
