@@ -8,5 +8,10 @@ spec:
     image: ubuntu-sleeper
     command: ["sleep"]
     args: ["3600"]
+    ports:
+    - containerPort: 80
+    env:
+    - name: env
+      value: dev
   # nodeSelector:
     # env: dev
