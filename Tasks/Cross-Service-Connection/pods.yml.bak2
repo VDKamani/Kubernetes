@@ -1,0 +1,102 @@
+# Namespace for Stage
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stage
+
+---
+# Namespace for Prod
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+
+---
+# Stage Service in the Stage Namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: stage-service
+  namespace: stage
+spec:
+  selector:
+    app: stage-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+# Prod Service in the Prod Namespace
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-service
+  namespace: prod
+spec:
+  selector:
+    app: prod-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+# Stage Pod 1 in the Stage Namespace (Connected to Stage Service)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stage-pod-1
+  namespace: stage
+spec:
+  containers:
+    - name: stage-container
+      image: nginx
+      ports:
+        - containerPort: 80
+---
+# Stage Pod 2 in the Stage Namespace (Connected to Prod Service)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stage-pod-2
+  namespace: stage
+spec:
+  containers:
+    - name: stage-container
+      image: nginx
+      ports:
+        - containerPort: 80
+  env:
+    - name: PROD_SERVICE
+      value: "prod-service.prod.svc.cluster.local"
+
+---
+# Prod Pod 1 in the Prod Namespace (Connected to Prod Service)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod-1
+  namespace: prod
+spec:
+  containers:
+    - name: prod-container
+      image: nginx
+      ports:
+        - containerPort: 80
+---
+# Prod Pod 2 in the Prod Namespace (Connected to Stage Service)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod-2
+  namespace: prod
+spec:
+  containers:
+    - name: prod-container
+      image: nginx
+      ports:
+        - containerPort: 80
+  env:
+    - name: STAGE_SERVICE
+      value: "stage-service.stage.svc.cluster.local"

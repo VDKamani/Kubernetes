@@ -1,0 +1,94 @@
+# First we will create 2 namespace 1 is stage and second is prod
+# then 1 pod in stage and 1 pod in prod namespace
+# then we will create a service in stage and a service in prod namespace
+# pod of stage is connected to service of stage namespace
+# pod of prod is connected to service of prod namespace
+# now again we will create a pod in stage namespace and a pod in prod namespace
+# now pod in stage namespace is connected to existing service of prod namespace
+# and pod in prod namespace is connected to existing service of stage namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stage
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stage-pod
+  namespace: stage
+  labels:
+    app: stage
+    service : stage-service
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod
+  namespace: prod
+  labels:
+    app: prod
+    service : prod-service
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stage-pod-2
+  namespace: stage
+  labels:
+    app: stage
+    service: prod-service
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod-2
+  namespace: prod
+  labels:
+    app: prod
+    service: stage-service
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stage-service
+spec:
+  selector:
+    service: stage-service
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-service
+  namespace: prod
+spec:
+  selector:
+    service: prod-service
+  ports:
+    - port: 80
+      targetPort: 80
+---
