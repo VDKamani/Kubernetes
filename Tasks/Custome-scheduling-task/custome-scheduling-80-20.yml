@@ -1,0 +1,121 @@
+# Explaination: 
+# In this task there will be 4 deployments with each have 4 node in it.
+# 1st deployment will deploy all the pods on worker node
+# 2nd deployment will deploy 50% on worker02 and 50% on worker03
+# 3rd deployment will deploy 50% on worker02 and 50% on worker03
+# 4th deployment will deploy 80% of pod where deployment 3's having more pods and 20% of pod where deployment 3's having less pods
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deployment1
+  template:
+    metadata:
+      labels:
+        app: deployment1
+    spec:
+      nodeSelector: 
+        kubernetes.io/hostname: worker
+      containers:
+      - name: nginx
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deployment2
+  template:
+    metadata:
+      labels:
+        app: deployment2
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - worker02
+                - worker03
+      containers:
+      - name: nginx
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment3
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deployment3
+  template:
+    metadata:
+      labels:
+        app: deployment3
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - worker02
+                - worker03
+      containers:
+      - name: nginx
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment4
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: deployment4
+  template:
+    metadata:
+      labels:
+        app: deployment4
+    spec:
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 80
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - deployment3
+              topologyKey: kubernetes.io/hostname
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - deployment3
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: nginx
+        image: nginx
