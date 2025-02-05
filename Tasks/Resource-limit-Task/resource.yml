@@ -1,0 +1,53 @@
+# In this task we will be limiting the resources of a pod using resource limits.
+# we will create 2 deployment 1 ex-cpu and 1 ex-memory
+# we will intentionally set the resource limits to a value that is lower than the actual resource usage of the pod.
+# my server is having 2 cpu and 4Gi memory in each node.
+# we will create a pod with 3 cpu and 5Gi memory and set the resource limit to 2 cpu and 3Gi memory.
+# we will create a pod with 1 cpu and 2Gi memory and set the resource limit to 0.5 cpu and 1Gi memory.
+# in ex-cpu we will use hight cpu image and in ex-memory we will use high memory image.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ex-cpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ex-cpu
+  template:
+    metadata:
+      labels:
+        app: ex-cpu
+    spec:
+      containers:
+      - name: ex-cpu
+        image: polinux/stress
+        resources:
+          limits:
+            cpu: "2"
+            memory: "3Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ex-memory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ex-memory
+  template:
+    metadata:
+      labels:
+        app: ex-memory
+    spec:
+      containers:
+      - name: ex-memory
+        image: polinux/stress
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "1Gi"
+
+            
