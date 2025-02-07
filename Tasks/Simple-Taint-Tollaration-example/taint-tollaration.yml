@@ -1,0 +1,28 @@
+# create a deployment with 2 replicas and it should have tollaration for taints env=prod:NoSchedule
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod
+  labels:
+    app: prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app: prod
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+      tolerations:
+        - key: "env"
+          operator: "Equal"
+          value: "prod"
+          effect: "NoSchedule"
+      nodeSelector: 
+        env: prod
