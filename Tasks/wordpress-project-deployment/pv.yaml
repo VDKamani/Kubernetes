@@ -1,0 +1,66 @@
+# StorageClass for MySQL and WordPress
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mysql-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: Immediate
+---
+# Persistent Volume for MySQL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    app: wordpress
+    tier: mysql
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: mysql-storage
+  hostPath:
+    path: "/mnt/data/mysql"
+---
+# Persistent Volume for WordPress
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv
+  labels:
+    app: wordpress
+    tier: frontend
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: mysql-storage
+  hostPath:
+    path: "/mnt/data/wordpress"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wordpress-sql-dump-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /mnt/data/wordpress-sql-dump  # Change this to your desired directory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-sql-dump-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+

@@ -1,0 +1,84 @@
+# Explanation:
+# in this task we will be using topics like nodeselector , tainted nodes and tolerations, node affinity and anti-affinity
+# so the task is that we will be creating 2 deployment with 2 replicas each which is Dev Stage and Prod
+# Dev should be deployed on nodes with label env=dev and Stage should be deployed on nodes which doesn't have lable env=prod
+# and Prod should be deployed on nodes with taints envType=prod:NoSchedule
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev
+  labels:
+    app: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+      nodeSelector: 
+        env: dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stage 
+  labels:
+    app: stage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stage
+  template:
+    metadata:
+      labels:
+        app: stage
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod
+  labels:
+    app: prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: prod
+  template:
+    metadata:
+      labels:
+        app: prod
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: env
+                operator: In
+                values:
+                - prod
+      tolerations:
+        - key: "env"
+          operator: "Exists"
+          effect: "NoSchedule"
+---
+
+

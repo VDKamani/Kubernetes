@@ -1,0 +1,36 @@
+# Persistent Volume for MySQL
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    app: wordpress
+    tier: mysql
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/mysql"
+  
+  
+
+---
+
+# Persistent Volume for WordPress
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv
+  labels:
+    app: wordpress
+    tier: frontend
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/wordpress"
+
