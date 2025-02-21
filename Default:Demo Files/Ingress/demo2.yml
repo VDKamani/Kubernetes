@@ -40,3 +40,4 @@ status:
   loadBalancer:
     ingress:
     - ip: 172.20.146.71
+
